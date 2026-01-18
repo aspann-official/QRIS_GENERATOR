@@ -7,8 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const API_KEY = "kIb2krvypAo8WYYjvI5tOyHInS5ftmil";
-const PROJECT = "raff-coffe";
+const API_KEY = "Oxz8eU0CipNGMcKz4XVpJuKQ7ySOXodc";
+const PROJECT = "aspan-store";
 const AUTHOR = "Aspan-Official"; // ⬅️ TAMBAHAN
 
 app.post("/qris", async (req, res) => {
