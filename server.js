@@ -7,13 +7,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ⚠️ lebih aman taruh di ENV, tapi ini dulu boleh
 const API_KEY = "Oxz8eU0CipNGMcKz4XVpJuKQ7ySOXodc";
 const PROJECT = "aspan-store";
-const AUTHOR = "Aspan-Official"; // ⬅️ TAMBAHAN
+const AUTHOR = "Aspan-Official";
 
-app.post("/qris", async (req, res) => {
+// TEST
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, author: AUTHOR });
+});
+
+// CREATE QRIS
+app.post("/api/create-qris", async (req, res) => {
   try {
     const { order_id, amount } = req.body;
+
+    if (!order_id || !amount) {
+      return res.status(400).json({
+        success: false,
+        message: "order_id dan amount wajib diisi",
+        author: AUTHOR
+      });
+    }
 
     const response = await fetch(
       "https://app.pakasir.com/api/transactioncreate/qris",
@@ -23,7 +38,7 @@ app.post("/qris", async (req, res) => {
         body: JSON.stringify({
           project: PROJECT,
           order_id,
-          amount,
+          amount: Number(amount),
           api_key: API_KEY
         })
       }
@@ -31,19 +46,19 @@ app.post("/qris", async (req, res) => {
 
     const data = await response.json();
 
-    // ⬇️ KIRIM AUTHOR KE FRONTEND
-    res.json({
+    return res.json({
+      success: true,
       ...data,
       author: AUTHOR
     });
 
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
       error: err.message,
       author: AUTHOR
     });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("API running"));
+export default app;
